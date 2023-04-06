@@ -14,10 +14,14 @@ final class KImageEraserView: UIView {
     private var thumbnailView = UIImageView()
     private var drawingView = KDrawingView()
     
-    init(frame: CGRect, image: UIImage) {
+    var image: UIImage {
+        return originImage
+    }
+    
+    init(image: UIImage) {
         self.originImage = image
         self.thumbnailView.image = image
-        super.init(frame: frame)
+        super.init(frame: .zero)
         
         addSubview(thumbnailView)
         addSubview(drawingView)
@@ -60,7 +64,7 @@ final class KImageEraserView: UIView {
 }
 
 // MARK: - DrawingViewDelegate
-extension ImageEraserView: DrawingViewDelegate {
+extension KImageEraserView: KDrawingViewDelegate {
     
     func drawEnded(_ image: UIImage) {
         UIGraphicsBeginImageContextWithOptions(thumbnailView.bounds.size, false, 0.0)

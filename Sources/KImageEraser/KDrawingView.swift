@@ -7,10 +7,6 @@
 
 import UIKit
 
-protocol KDrawingViewDelegate: AnyObject {
-    func drawEnded(_ image: UIImage)
-}
-
 final class KDrawingView: UIImageView {
     weak var delegate: KDrawingViewDelegate?
         
@@ -55,6 +51,10 @@ final class KDrawingView: UIImageView {
         if let image {
             delegate?.drawEnded(image)
         }
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
     }
     
     private func drawLine(from fromPoint: CGPoint, to toPoint: CGPoint) {

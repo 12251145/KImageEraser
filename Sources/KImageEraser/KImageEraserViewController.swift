@@ -7,57 +7,49 @@
 
 import UIKit
 
+public protocol KImageEraserViewControllerDelegate: AnyObject {
+    func imageEraserViewControllerDoneImageErase(_ viewController: KImageEraserViewController, image: UIImage)
+    func imageEraserViewControllerCloseButtonDidTap(_ viewController: KImageEraserViewController)
+}
+
 open class KImageEraserViewController: UIViewController {
     
-    private let imageEraserView: KImageEraserView
-        
-    let maxWidth: CGFloat
-    let maxHeight: CGFloat
+    public weak var delegate: KImageEraserViewControllerDelegate?
     
+    private let viewControllerView: KImageEraserViewControllerView
+
     public init(
         image: UIImage,
-        maxWidth: CGFloat = UIScreen.main.bounds.size.width,
-        maxHeight: CGFloat = UIScreen.main.bounds.size.width,
-        eraserViewY: CGFloat = 150
+        eraserViewMaxWidth: CGFloat = UIScreen.main.bounds.size.width,
+        eraserViewMaxHeight: CGFloat = UIScreen.main.bounds.size.width
     ) {
-        self.maxWidth = maxWidth
-        self.maxHeight = maxHeight
-        
-        let width: CGFloat
-        let height: CGFloat
-        
-        if image.size.width < image.size.height {
-            let ratio = image.size.width / image.size.height
-            height = maxHeight
-            width = round(height * ratio)
-        } else {
-            let ratio = image.size.height / image.size.width
-            width = maxWidth
-            height = round(width * ratio)
-        }
-
-        let x = round((UIScreen.main.bounds.width - width) / 2)
-        let y = round(eraserViewY)
-        
-        self.imageEraserView = KImageEraserView(
-            frame: .init(x: x, y: y, width: width, height: height),
-            image: image
+        self.viewControllerView = KImageEraserViewControllerView(
+            image: image,
+            eraserViewMaxWidth: eraserViewMaxWidth,
+            eraserViewMaxHeight: eraserViewMaxHeight
         )
-        
         super.init(nibName: nil, bundle: nil)
+        
+        self.viewControllerView.imageEraserToolBar.delegate = self
     }
     
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        view.addSubview(imageEraserView)
+    open override func loadView() {
+        view = viewControllerView
     }
+}
 
-    func maskedImage() -> UIImage {        
-        return imageEraserView.maskedImage()
+//MARK: - KImageEraserToolBarDelegate
+extension KImageEraserViewController: KImageEraserToolBarDelegate {
+    func doneButtonDidTap() {
+        let image = viewControllerView.imageEraserView.maskedImage()
+        delegate?.imageEraserViewControllerDoneImageErase(self, image: image)
+    }
+    
+    func closeButtonDidTap() {
+        delegate?.imageEraserViewControllerCloseButtonDidTap(self)
     }
 }
