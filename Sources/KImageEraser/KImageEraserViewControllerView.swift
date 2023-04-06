@@ -72,22 +72,16 @@ final class KImageEraserViewControllerView: UIView {
 
         let eraserViewYMargin = (eraserViewMaxHeight - eraserViewHeight) / 2
         let eraserViewX = round((bounds.size.width - eraserViewWidth) / 2)
-        let eraserViewY = round(((bounds.size.height / 2) - (eraserViewHeight / 2)) / 1.5) + eraserViewYMargin
+        let eraserViewY = round(((bounds.size.height / 2) - (eraserViewHeight / 2)) / 2) + eraserViewYMargin
         
         imageEraserView.frame = .init(x: eraserViewX, y: eraserViewY, width: eraserViewWidth, height: eraserViewHeight)
     }
     
     private func imageEraserToolBarLayout() {
         let toolBarHeight: CGFloat = 50
-        var toolBarY: CGFloat = 0
         
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            var bottomPadding = window.safeAreaInsets.bottom
-            bottomPadding += 20
-            
-            toolBarY = bounds.size.height - bottomPadding - toolBarHeight
-        }
+        let bottomPadding = (bounds.size.height -  imageEraserView.frame.maxY) / 3
+        let toolBarY = bounds.size.height - bottomPadding - (toolBarHeight / 2)
         
         imageEraserToolBar.frame = .init(x: 0, y: toolBarY, width: bounds.size.width, height: toolBarHeight)
     }
