@@ -67,6 +67,13 @@ final class KImageEraserView: UIView {
 extension KImageEraserView: KDrawingViewDelegate {
     
     func drawEnded(_ image: UIImage) {
+        drawThumbnail(image)
+        drawMask()
+        
+        drawingView.image = nil
+    }
+    
+    private func drawThumbnail(_ image: UIImage) {
         UIGraphicsBeginImageContextWithOptions(thumbnailView.bounds.size, false, 0.0)
         
         let context = UIGraphicsGetCurrentContext()
@@ -75,10 +82,21 @@ extension KImageEraserView: KDrawingViewDelegate {
         thumbnailView.image?.draw(in: thumbnailView.bounds, blendMode: .normal, alpha: 1.0)
         image.draw(in: thumbnailView.bounds, blendMode: .destinationOut, alpha: 1.0)
         
-        maskImage = image
-        
-        drawingView.image = nil
         thumbnailView.image = UIGraphicsGetImageFromCurrentImageContext()
+        
+        UIGraphicsEndImageContext()
+    }
+    
+    private func drawMask() {
+        UIGraphicsBeginImageContextWithOptions(drawingView.bounds.size, false, 0.0)
+        
+        let context = UIGraphicsGetCurrentContext()
+        context?.interpolationQuality = .high
+        
+        maskImage?.draw(in: drawingView.bounds, blendMode: .normal, alpha: 1.0)
+        drawingView.image?.draw(in: drawingView.bounds, blendMode: .normal, alpha: 1.0)
+        
+        maskImage = UIGraphicsGetImageFromCurrentImageContext()
         
         UIGraphicsEndImageContext()
     }
